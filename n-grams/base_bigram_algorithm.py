@@ -1,21 +1,23 @@
 from random import choices
 
 
-def count_transitions(raw_text: str = "кот спит кот ест кот спит") -> dict[str, dict[str, int]]:
-    text: list[str] = ("<start> " + raw_text + " <end>").lower().split()
+def count_transitions(sentences: list[str]) -> dict[str, dict[str, int]]:
     transitions: dict[str, dict[str, int]] = dict()
 
-    for i in range(len(text) - 1):
-        word, next_word = text[i], text[i + 1]
-        if word not in transitions:
-            transitions[word] = {next_word: 1}
+    for sentence in sentences:
+        text: list[str] = ("<start> " + sentence + " <end>").lower().split()
 
-        else:
-            if next_word not in transitions[word]:
-                transitions[word][next_word] = 1
+        for i in range(len(text) - 1):
+            word, next_word = text[i], text[i + 1]
+            if word not in transitions:
+                transitions[word] = {next_word: 1}
 
             else:
-                transitions[word][next_word] += 1
+                if next_word not in transitions[word]:
+                    transitions[word][next_word] = 1
+
+                else:
+                    transitions[word][next_word] += 1
 
     return transitions
 
@@ -40,15 +42,15 @@ def generate_text(probabilities: dict[str, dict[str, float]], first_word: str = 
         last_word = choices(list(probabilities[last_word].keys()), weights=list(probabilities[last_word].values()))[0]
 
         if last_word == "<end>":
-            return text
+            return text[1:]
 
         text += " " + last_word
 
-    return text
+    return text[1:]
 
 
 if __name__ == "__main__":
-    user_input: str = input("Enter a sentence: ")
+    user_input: list[str] = ["кот ест рыбу", "кот ест корм", "пёс ест мясо", "пёс ест корм"]
     result: dict[str, dict[str, int]] = count_transitions(user_input)
     print(result)
     result: dict[str, dict[str, float]] = calculate_probabilities(result)
