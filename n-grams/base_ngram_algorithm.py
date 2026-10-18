@@ -1,14 +1,15 @@
 from random import choices
 
-n: int = 3
+global_n: int = 3
 
 
 def setup(ngram: int = 3):
-    global n
-    n = ngram
+    global global_n
+    global_n = ngram
 
 
-def count_transitions(sentences: list[str]) -> dict[tuple[str, ...], dict[str, int]]:
+def count_transitions(sentences: list[str], n: int = None) -> dict[tuple[str, ...], dict[str, int]]:
+    n = n if n is not None else global_n
     transitions: dict[tuple[str, ...], dict[str, int]] = dict()
 
     for sentence in sentences:
@@ -42,8 +43,9 @@ def calculate_probabilities(transitions: dict[tuple[str, ...], dict[str, int]]) 
     return probabilities
 
 
-def generate_text(probabilities: dict[tuple[str, ...], dict[str, float]], steps: int = 10) -> str:
+def generate_text(probabilities: dict[tuple[str, ...], dict[str, float]], steps: int = 10, n: int = None) -> str:
     text: str = ""
+    n = n if n is not None else global_n
     last_words: tuple[str, ...] = tuple(("<start> " * (n - 1)).split())
 
     for _ in range(steps):
